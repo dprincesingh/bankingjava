@@ -5,6 +5,13 @@ import java.util.Scanner;
 class User {
     private String name;
     private int mpin;
+
+    public User(int acNum, int mpin, String name) {
+        this.acNum = acNum;
+        this.mpin = mpin;
+        this.name = name;
+    }
+
     private int acNum;
     private int balance = 0;
 
@@ -50,6 +57,7 @@ class User {
 }
 
 public class Main {
+    static  Map<Integer,User> userData = new HashMap<>();
     static Map<Integer, Integer> userDataAcNdMpin = new HashMap<>();
     static Map<Integer, Integer> userDataAcNdBal = new HashMap<>();
     static Map<Integer, String> userDataAcNdName = new HashMap<>();
@@ -64,13 +72,20 @@ public class Main {
 
         while (isrunning) {
             System.out.print("Choose:- ");
-            choice = sc.nextInt();
+            String input = sc.nextLine();
+            if(isInteger(input)){
+                choice = Integer.parseInt(input);
+
             switch (choice) {
                 case 1 -> openAccount(sc);
                 case 2 -> login(sc);
                 case 9 -> isrunning = exit();
                 default -> System.out.println("Wrong Input");
             }
+            }else{
+                System.out.println("Input a Integer ");
+            }
+
         }
     }
 
@@ -83,27 +98,37 @@ public class Main {
     }
 
     public static void openAccount(Scanner sc) {
-        User us = new User();
         System.out.println("Fill your details:- ");
-        sc.nextLine();
         System.out.println("Enter your name ");
-        us.setName(sc.nextLine());
+        String name = sc.nextLine();
+
+        while (!isString(name)){
+            System.out.println("Enter Only String");
+            System.out.println("Enter your name ");
+             name = sc.nextLine();
+        }
+
+
 
         System.out.println("Enter your Account number of 5 Digits only :-");
-        int ac = sc.nextInt();
-        while (ac > 99999 || ac < 10000) {
+        String accountstr = sc.nextLine();
+
+        while (!isInteger(accountstr)|| accountstr.length()!=5) {
             System.out.println("Enter only 5 digits for the Account number: ");
-            ac = sc.nextInt();
+            accountstr = sc.nextLine();;
         }
-        us.setAcNum(ac);
+        int ac= Integer.parseInt(accountstr);
+
+
 
         System.out.println("Enter your MPIN:-");
-        int mpin = sc.nextInt();
-        while (mpin > 9999 || mpin < 1000) {
-            System.out.println("Enter only 4 digits for the MPIN: ");
-            mpin = sc.nextInt();
+        String mpins = sc.nextLine();
+        while (!isInteger(mpins) || mpins.length() != 4) {
+            System.out.println("Invalid input. Please enter a 4-digit MPIN: ");
+            mpins = sc.nextLine();
         }
-        us.setMpin(mpin);
+        int mpin = Integer.parseInt(mpins);
+        User us = new User(ac, mpin,name);
 
         System.out.println("Account Created Successfully");
         System.out.println(us.toString());
@@ -119,14 +144,29 @@ public class Main {
     public static void login(Scanner sc) {
         System.out.println("To login ");
         System.out.print("Enter A/c Number: ");
-        int ac = sc.nextInt();
+        String accountstr = sc.nextLine();
+
+        while (!isInteger(accountstr)|| accountstr.length()!=5) {
+            System.out.println("Enter only 5 digits for the Account number: ");
+            accountstr = sc.nextLine();;
+        }
+        int ac= Integer.parseInt(accountstr);
+
+
         System.out.print("Enter Mpin: ");
-        int mpin = sc.nextInt();
+        String mpins = sc.nextLine();
+        while(!isInteger(mpins)){
+            System.out.println("Enter only in integer");
+            System.out.println("Enter Mpin");
+            mpins = sc.nextLine();
+        }
+        int mpin = Integer.parseInt(mpins);
+
 
         if (userDataAcNdMpin.containsKey(ac) && userDataAcNdMpin.get(ac) == mpin) {
             System.out.println("Logging in... Please wait...");
             try {
-                Thread.sleep(3000); // Simulate login delay
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 System.out.println("Error while logging in.");
             }
@@ -193,4 +233,16 @@ public class Main {
         isrunning = false;
         return false;
     }
+    public static boolean isInteger(String str) {
+        try {
+            Integer.parseInt(str);  // Attempt to parse the string to an integer
+            return true;  // If successful, it's a valid integer
+        } catch (NumberFormatException e) {
+            return false;  // If parsing fails, return false
+        }
+    }
+    public static boolean isString(String str) {
+        return str.matches("[a-zA-Z ]+");  // Allows alphabetic characters (uppercase/lowercase) and spaces
+    }
+
 }
